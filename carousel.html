@@ -7,18 +7,18 @@
     <title>carousel</title>
     <link rel="stylesheet" type="text/css" href="./carousel.css">
     <style type="text/css" media="screen">
-        .carousel {
-            width: 800px;
-            height: 600px;
-            margin: 0 auto;
-            background-color: green;
-        }
+    .carousel {
+        width: 800px;
+        height: 600px;
+        margin: 0 auto;
+        background-color: green;
+    }
     </style>
 </head>
 
 <body>
-    <div class="carousel slide vertical " id="carousel-demo" data-ride="carousel">
-        <ul class="carousel-indicators vertical">
+    <div class="carousel slide" id="carousel-demo" data-ride="carousel">
+        <ul class="carousel-indicators">
             <li data-target="#carousel-demo" data-slide-to="0" class="active"></li>
             <li data-target="#carousel-demo" data-slide-to="1"></li>
             <li data-target="#carousel-demo" data-slide-to="2"></li>
@@ -34,12 +34,12 @@
                 <p>here is the item3</p>
             </div>
         </div>
-        <a class="up carousel-control vertical" href="#carousel-demo" data-slide="before">
-            <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+        <a class="left carousel-control" href="#carousel-demo" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
             <span class="sr-only">Previous</span>
         </a>
-        <a class="down carousel-control vertical" href="#carousel-demo" data-slide="after">
-            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+        <a class="right carousel-control" href="#carousel-demo" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
             <span class="sr-only">Next</span>
         </a>
     </div>
