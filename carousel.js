@@ -1,4 +1,66 @@
 /* ========================================================================
+ * Bootstrap: transition.js v3.3.0
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2011-2014 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++ function($) {
+    'use strict';
+
+    // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+    // ============================================================
+
+    function transitionEnd() {
+        var el = document.createElement('bootstrap')
+
+        var transEndEventNames = {
+            WebkitTransition: 'webkitTransitionEnd',
+            MozTransition: 'transitionend',
+            OTransition: 'oTransitionEnd otransitionend',
+            transition: 'transitionend'
+        }
+
+        for (var name in transEndEventNames) {
+            if (el.style[name] !== undefined) {
+                return { end: transEndEventNames[name] }
+            }
+        }
+
+        return false // explicit for ie8 (  ._.)
+    }
+
+    // http://blog.alexmaccaw.com/css-transitions
+    $.fn.emulateTransitionEnd = function(duration) {
+        var called = false
+        var $el = this
+        $(this).one('bsTransitionEnd', function() { called = true })
+        var callback = function() {
+            if (!called) $($el).trigger($.support.transition.end) }
+        setTimeout(callback, duration)
+        return this
+    }
+
+    $(function() {
+        $.support.transition = transitionEnd()
+
+        if (!$.support.transition) return
+            //
+            // 自定义事件bsTransitionEnd
+        $.event.special.bsTransitionEnd = {
+            bindType: $.support.transition.end,
+            delegateType: $.support.transition.end,
+            handle: function(e) {
+                if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+            }
+        }
+    })
+
+}(jQuery);
+
+/* ========================================================================
  * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
@@ -61,10 +123,15 @@
         e || (this.paused = false)
 
         this.interval && clearInterval(this.interval)
-
-        this.options.interval && !this.paused && (this.interval = setInterval($.proxy(this.next, this), this.options.interval))
+        this.options.interval && !this.paused && (this.interval = setInterval(this.checkVertical() ? $.proxy(this.after, this) : $.proxy(this.next, this), this.options.interval))
 
         return this
+    }
+
+    Carousel.prototype.checkVertical = function() {
+        var $element = this.$element;
+        if ($element.hasClass('vertical') || this.options.vertical) return true;
+        return false;
     }
 
     Carousel.prototype.getItemIndex = function(item) {
@@ -74,9 +141,9 @@
 
     Carousel.prototype.getItemForDirection = function(direction, active) {
         var activeIndex = this.getItemIndex(active)
-        var willWrap = (direction == 'prev' && activeIndex === 0) || (direction == 'next' && activeIndex == (this.$items.length - 1))
+        var willWrap = (direction == 'prev' || direction == 'before' && activeIndex === 0) || (direction == 'next' || direction == 'after' && activeIndex == (this.$items.length - 1))
         if (willWrap && !this.options.wrap) return active
-        var delta = direction == 'prev' ? -1 : 1
+        var delta = direction == ('prev' || 'before') ? -1 : 1
         var itemIndex = (activeIndex + delta) % this.$items.length
         return this.$items.eq(itemIndex)
     }
@@ -90,13 +157,13 @@
         if (this.sliding) return this.$element.one('slid.bs.carousel', function() { that.to(pos) }) // yes, "slid"
         if (activeIndex == pos) return this.pause().cycle()
 
-        return this.slide(pos > activeIndex ? 'next' : 'prev', this.$items.eq(pos))
+        return this.slide(pos > activeIndex ? (this.checkVertical() ? 'after' : 'next') : (this.checkVertical() ? 'before' : 'prev'), this.$items.eq(pos))
     }
 
     Carousel.prototype.pause = function(e) {
         e || (this.paused = true)
 
-        if (this.$element.find('.next, .prev').length && $.support.transition) {
+        if (this.$element.find('.next, .prev, .before, .after').length && $.support.transition) {
             this.$element.trigger($.support.transition.end)
             this.cycle(true)
         }
@@ -116,11 +183,21 @@
         return this.slide('prev')
     }
 
+    Carousel.prototype.before = function() {
+        if (this.sliding) return
+        return this.slide('before');
+    }
+
+    Carousel.prototype.after = function() {
+        if (this.sliding) return
+        return this.slide('after');
+    }
+
     Carousel.prototype.slide = function(type, next) {
         var $active = this.$element.find('.item.active')
         var $next = next || this.getItemForDirection(type, $active)
         var isCycling = this.interval
-        var direction = type == 'next' ? 'left' : 'right'
+        var direction = type == 'next' ? 'left' : type == 'prev' ? 'right' : type == 'before' ? 'down' : 'up'  
         var that = this
 
         if ($next.hasClass('active')) return (this.sliding = false)

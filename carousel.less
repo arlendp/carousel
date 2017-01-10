@@ -1,4 +1,5 @@
 @import 'lib/variables.less';
+@import 'lib/reset.less';
 @import 'lib/vendor-prefixes.less';
 //
 // Carousel
@@ -121,6 +122,13 @@
     }
 }
 
+.carousel.vertical .carousel-inner {
+    height: 100%;
+    > .item {
+        height: 100%;
+    }
+}
+
 // Left/right controls for nav
 // ---------------------------
 .carousel-control {
@@ -138,6 +146,10 @@
     // We can't have this transition here because WebKit cancels the carousel
     // animation if you trip this while in the middle of another animation.
     // Set gradients for backgrounds
+    &.vertical {
+        width: auto;
+        height: @carousel-control-height;
+    }
     &.left {
         #gradient > .horizontal(@start-color: rgba(0, 0, 0, .5);
         @end-color: rgba(0, 0, 0, .0001));
@@ -147,6 +159,19 @@
         right: 0;
         #gradient > .horizontal(@start-color: rgba(0, 0, 0, .0001);
         @end-color: rgba(0, 0, 0, .5));
+    }
+    &.up {
+        #gradient > .vertical(@start-color: rgba(0, 0, 0, .5));
+        @end-color: rgba(0, 0, 0, 0.001));
+        bottom: auto;
+        right: 0;
+    }
+    &.down {
+        #gradient > .horizontal(@start-color: rgba(0, 0, 0, .0001);
+        @end-color: rgba(0, 0, 0, .5));
+        top: auto;
+        right: 0;
+        bottom: 0;
     }
     // Hover/focus state
     &:hover,
@@ -167,18 +192,32 @@
         z-index: 5;
         display: inline-block;
     }
+    .icon-before,
+    .icon-after,
+    .glyphicon-chevron-up,
+    .glyphicon-chevron-down {
+        position: absolute;
+        left: 50%;
+        margin-left: -10px;
+        z-index: 5;
+        display: inline-block;
+    }
     .icon-prev,
     .glyphicon-chevron-left {
         left: 50%;
         margin-left: -10px;
     }
-    .icon-next,
-    .glyphicon-chevron-right {
-        right: 50%;
-        margin-right: -10px;
+    .icon-before,
+    .glyphicon-chevron-up,
+    .icon-after,
+    .glyphicon-chevron-down {
+        top: 50%;
+        margin-top: -10px;
     }
     .icon-prev,
-    .icon-next {
+    .icon-next,
+    .icon-before,
+    .icon-after {
         width: 20px;
         height: 20px;
         line-height: 1;
@@ -239,6 +278,19 @@
     }
 }
 
+.carousel-indicators.vertical {
+    width: auto;
+    right: 10px;
+    left: auto;
+    margin-left: 0;
+    top: 50%;
+    margin-top: -30px;
+    li {
+        display: block;
+        margin-top: 10px;
+    }
+}
+
 // Optional captions
 // -----------------------------
 // Hidden by default for smaller viewports
@@ -289,5 +341,9 @@
     // Move up the indicators
     .carousel-indicators {
         bottom: 20px;
+    }
+    .carousel-indicators.vertical {
+        bottom: auto;
+        right: 20px;
     }
 }
